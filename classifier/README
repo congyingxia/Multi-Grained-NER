@@ -1,0 +1,7 @@
+# Step 2.1, train classifier
+
+python train.py
+
+# Step 2.2, evaluate model performance
+
+python evaluate.py
