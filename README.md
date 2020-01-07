@@ -9,17 +9,28 @@ https://arxiv.org/abs/1906.08449
 
 # Usage
 
+Step 0.0, Prepare Data
+
+Datasets: The dataset content is subject to copyright issues. Some useful pointers:
+(ACE 2004) https://catalog.ldc.upenn.edu/LDC2005T09
+(ACE 2005) https://catalog.ldc.upenn.edu/LDC2006T06
+(CoNLL 2003) https://cogcomp.seas.upenn.edu/page/resource_view/81
+
+Word embeddings: Download glove.6B.zip from https://nlp.stanford.edu/projects/glove/. Unzip it and put glove.6B.300d.txt under the directory of data/glove.6B/
+
 
 Step 1.0, Enter the detector directory and follow the README file
 
   Step 1.1, data preprocessing
 
   ```
+  cd detector
   python build_data.py
   ```
+  It should generate files including ``glove.6B.300d.trimmed.npz, chars.txt, tags.txt and words.txt'' under data
 
   Step 1.2, train detector
-  
+ 
   ```
   python train.py
   ```
