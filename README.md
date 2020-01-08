@@ -22,9 +22,9 @@ Sklearn
 
 # Usage
 
-Step 0.0, Prepare Data
+## Step 0.0, Prepare Data
 
- -- Get Datasets: The dataset content is subject to copyright issues. 
+ ### Get Datasets: The dataset content is subject to copyright issues. 
 
     Some useful pointers:
 
@@ -84,9 +84,9 @@ Step 0.0, Prepare Data
  
  
  
-Step 1.0, Enter the detector directory and follow the README file
+## Step 1.0, Run Detector
 
-  Step 1.1, data preprocessing
+  ### Step 1.1, data preprocessing
 
   ```
   cd detector
@@ -112,7 +112,7 @@ Step 1.0, Enter the detector directory and follow the README file
   python evaluate.py
   ```
 
-Step 2.0, Enter the classifier directory and follow the README file
+## Step 2.0, Run Classifier
 
   Step 2.1, train classifier
   
