@@ -7,47 +7,71 @@ Congying Xia, Chenwei Zhang, Tao Yang, Yaliang Li, Nan Du, Xian Wu, Wei Fan, Fen
 
 https://arxiv.org/abs/1906.08449
 
+# Requirements
+
+Python
+
+Tensorflow 1.13.1
+
+AllenNLP
+
+Numpy
+
+Sklearn
+
+
 # Usage
 
 Step 0.0, Prepare Data
 
-Get Datasets: The dataset content is subject to copyright issues. 
+ -- Get Datasets: The dataset content is subject to copyright issues. 
 
-Some useful pointers:
+    Some useful pointers:
 
-(ACE 2004) https://catalog.ldc.upenn.edu/LDC2005T09
+    (ACE 2004) https://catalog.ldc.upenn.edu/LDC2005T09
 
-(ACE 2005) https://catalog.ldc.upenn.edu/LDC2006T06
+    (ACE 2005) https://catalog.ldc.upenn.edu/LDC2006T06
 
-(CoNLL 2003) https://cogcomp.seas.upenn.edu/page/resource_view/81
-
-Extract data and preprocess the dataset into the required data format.
-
-Format examples can be found at data/ace2004/train.txt
-Please copy your formated whole dataset to data/ace2004/train.txt, data/ace2004/test.txt and data/ace2004/dev.txt
+    (CoNLL 2003) https://cogcomp.seas.upenn.edu/page/resource_view/81
 
 
-Word embeddings: 
+-- Extract data and preprocess the dataset into the required data format.
 
-Download glove.6B.zip from https://nlp.stanford.edu/projects/glove/. 
+    Two types of format are needed. The first example can be found at data/ace2004/train.txt and the second examples can be found at data/ace2004/elmo/sentences/train_sentences
+     
+    Please generate formated files for the whole datasets.
+    
+    Replace the examples files with your generated files, including:
+    
+    data/ace2004/train.txt
+    
+    data/ace2004/test.txt
+    
+    data/ace2004/dev.txt
+    
+    data/ace2004/elmo/sentences/train_sentences
+    
+    data/ace2004/elmo/sentences/test_sentences
+    
+    data/ace2004/elmo/sentences/dev_sentences
 
-Unzip it and put glove.6B.300d.txt under the directory of data/glove.6B/
+
+-- Word embeddings: 
+
+    Download glove.6B.zip from https://nlp.stanford.edu/projects/glove/. 
+
+    Unzip it and put glove.6B.300d.txt under the directory of data/glove.6B/
 
 
-Elmo embeddings: 
+-- Elmo embeddings: 
 
- ```
-cd data/ace2004/elmo/sentences
- ```
- Follow the format showned in data/ace2004/elmo/sentences/train_sentences, Process data/ace2004/train.txt, data/ace2004/test.txt and data/ace2004/dev.txt into train_sentences, test_sentences and dev_sentences
- 
- Replace the files with the whole datasets.
-
- ```
-cd ../elmo
-sh run.sh
- ```
- Download Elmo embeddings. Three files named as elmo_dev.hdf5, elmo_test.hdf5 and elmo_train.hdf5 should be generated.
+    ```
+     cd data/ace2004/elmo
+     sh run.sh
+    ```
+  Run the script to download Elmo embeddings.
+  
+  Three files named as elmo_dev.hdf5, elmo_test.hdf5 and elmo_train.hdf5 should be generated.
  
  
 Step 1.0, Enter the detector directory and follow the README file
