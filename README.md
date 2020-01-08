@@ -107,6 +107,7 @@ Run the script to download Elmo embeddings.
   ```
   python dump.py
   ```
+  Dumped Features will be saved in ***data/saved_roi/***
 
   If you'd like to evaluate the performance of the Detector, please run the evaluate.py
   
