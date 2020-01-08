@@ -26,7 +26,7 @@ Sklearn
 
  ### Get Datasets: The dataset content is subject to copyright issues. 
 
-    Some useful pointers:
+   Some useful pointers:
 
     (ACE 2004) https://catalog.ldc.upenn.edu/LDC2005T09
 
@@ -35,17 +35,11 @@ Sklearn
     (CoNLL 2003) https://cogcomp.seas.upenn.edu/page/resource_view/81
 
 
--- Extract data and preprocess the dataset into the required data format.
+ ### Preprocess the datasets into the required data formats.
 
-    Two types of format are needed.
-    
-    The first example can be found at data/ace2004/train.txt.
-    
-    The second examples can be found at data/ace2004/elmo/sentences/train_sentences.
+   Two types of format are needed. The first example can be found at ***data/ace2004/train.txt***. The second examples can be found at ***data/ace2004/elmo/sentences/train_sentences***.
      
-    Please generate formated files for the whole datasets.
-    
-    Replace the example files with your generated files, including:
+   Please generate formated files for the whole datasets and replace the example files with your generated files, including:
     
     data/ace2004/train.txt
     
@@ -60,17 +54,16 @@ Sklearn
     data/ace2004/elmo/sentences/dev_sentences
 
 
--- Word embeddings: 
+### Word embeddings: 
 
-    Download glove.6B.zip from https://nlp.stanford.edu/projects/glove/. 
+   Download ***glove.6B.zip*** from https://nlp.stanford.edu/projects/glove/. 
 
-    Unzip it and put glove.6B.300d.txt under the directory of data/glove.6B/
+   Unzip it and put ***glove.6B.300d.txt*** under the directory of ***data/glove.6B/***
 
+### Elmo embeddings: 
 
--- Elmo embeddings: 
-
-     cd data/ace2004/elmo
-     sh run.sh
+    cd data/ace2004/elmo
+    sh run.sh
  
  Run the script to download Elmo embeddings.
   
@@ -86,13 +79,23 @@ Sklearn
  
 ## Step 1.0, Run Detector
 
-  ### Step 1.1, data preprocessing
+  ### Step 1.1, Build data for the detector
 
   ```
   cd detector
   python build_data.py
   ```
-  It should generate files including ``glove.6B.300d.trimmed.npz, chars.txt, tags.txt and words.txt'' under data
+  
+  It should generate files including
+        
+    data/glove.6B.300d.trimmed.npz
+    
+    data/chars.txt
+    
+    data/tags.txt
+    
+    data/words.txt
+          
 
   Step 1.2, train detector
  
