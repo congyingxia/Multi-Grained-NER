@@ -11,14 +11,45 @@ https://arxiv.org/abs/1906.08449
 
 Step 0.0, Prepare Data
 
-Datasets: The dataset content is subject to copyright issues. Some useful pointers:
+Get Datasets: The dataset content is subject to copyright issues. 
+
+Some useful pointers:
+
 (ACE 2004) https://catalog.ldc.upenn.edu/LDC2005T09
+
 (ACE 2005) https://catalog.ldc.upenn.edu/LDC2006T06
+
 (CoNLL 2003) https://cogcomp.seas.upenn.edu/page/resource_view/81
 
-Word embeddings: Download glove.6B.zip from https://nlp.stanford.edu/projects/glove/. Unzip it and put glove.6B.300d.txt under the directory of data/glove.6B/
+Extract data and preprocess the dataset into the required data format.
+
+Format examples can be found at data/ace2004/train.txt
+Please copy your formated whole dataset to data/ace2004/train.txt, data/ace2004/test.txt and data/ace2004/dev.txt
 
 
+Word embeddings: 
+
+Download glove.6B.zip from https://nlp.stanford.edu/projects/glove/. 
+
+Unzip it and put glove.6B.300d.txt under the directory of data/glove.6B/
+
+
+Elmo embeddings: 
+
+ ```
+cd data/ace2004/elmo/sentences
+ ```
+ Follow the format showned in data/ace2004/elmo/sentences/train_sentences, Process data/ace2004/train.txt, data/ace2004/test.txt and data/ace2004/dev.txt into train_sentences, test_sentences and dev_sentences
+ 
+ Replace the files with the whole datasets.
+
+ ```
+cd ../elmo
+sh run.sh
+ ```
+ Download Elmo embeddings. Three files named as elmo_dev.hdf5, elmo_test.hdf5 and elmo_train.hdf5 should be generated.
+ 
+ 
 Step 1.0, Enter the detector directory and follow the README file
 
   Step 1.1, data preprocessing
