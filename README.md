@@ -69,13 +69,19 @@ Step 0.0, Prepare Data
 
 -- Elmo embeddings: 
 
-    ```
      cd data/ace2004/elmo
      sh run.sh
-    ```
-  Run the script to download Elmo embeddings.
+ 
+ Run the script to download Elmo embeddings.
   
-  Three files named as elmo_dev.hdf5, elmo_test.hdf5 and elmo_train.hdf5 should be generated.
+ Three files should be generated:
+ 
+    elmo_dev.hdf5
+ 
+    elmo_test.hdf5
+ 
+    elmo_train.hdf5 
+ 
  
  
 Step 1.0, Enter the detector directory and follow the README file
