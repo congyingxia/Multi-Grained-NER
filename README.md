@@ -37,11 +37,15 @@ Step 0.0, Prepare Data
 
 -- Extract data and preprocess the dataset into the required data format.
 
-    Two types of format are needed. The first example can be found at data/ace2004/train.txt and the second examples can be found at data/ace2004/elmo/sentences/train_sentences
+    Two types of format are needed.
+    
+    The first example can be found at data/ace2004/train.txt.
+    
+    The second examples can be found at data/ace2004/elmo/sentences/train_sentences.
      
     Please generate formated files for the whole datasets.
     
-    Replace the examples files with your generated files, including:
+    Replace the example files with your generated files, including:
     
     data/ace2004/train.txt
     
