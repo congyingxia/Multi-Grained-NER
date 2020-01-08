@@ -24,9 +24,9 @@ Sklearn
 
 ## Step 0.0, Prepare Data
 
- ### Get Datasets: The dataset content is subject to copyright issues. 
-
-   Some useful pointers:
+ ### Get Datasets.
+ 
+ The dataset content is subject to copyright issues. Some useful pointers:
 
     (ACE 2004) https://catalog.ldc.upenn.edu/LDC2005T09
 
@@ -35,7 +35,7 @@ Sklearn
     (CoNLL 2003) https://cogcomp.seas.upenn.edu/page/resource_view/81
 
 
- ### Preprocess the datasets into the required data formats.
+ ### Preprocess the datasets into required data formats.
 
    Two types of format are needed. The first example can be found at ***data/ace2004/train.txt***. The second examples can be found at ***data/ace2004/elmo/sentences/train_sentences***.
      
@@ -62,10 +62,10 @@ Sklearn
 
 ### Elmo embeddings: 
 
+Run the script to download Elmo embeddings.
+
     cd data/ace2004/elmo
     sh run.sh
- 
- Run the script to download Elmo embeddings.
   
  Three files should be generated:
  
@@ -74,7 +74,6 @@ Sklearn
     elmo_test.hdf5
  
     elmo_train.hdf5 
- 
  
  
 ## Step 1.0, Run Detector
