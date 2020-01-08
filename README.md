@@ -96,13 +96,13 @@ Run the script to download Elmo embeddings.
     data/words.txt
           
 
-  Step 1.2, train detector
+   ### Step 1.2, train detector
  
   ```
   python train.py
   ```
 
-  Step 1.3, dump shared features
+   ### Step 1.3, dump shared features
   
   ```
   python dump.py
@@ -116,13 +116,13 @@ Run the script to download Elmo embeddings.
 
 ## Step 2.0, Run Classifier
 
-  Step 2.1, train classifier
+   ### Step 2.1, train classifier
   
   ```
   python train.py
   ```
 
-  Step 2.2, evaluate model performance
+   ### Step 2.2, evaluate model performance
   
   ```
   python evaluate.py
