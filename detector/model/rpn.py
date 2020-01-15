@@ -2,6 +2,9 @@ import re
 import numpy as np
 
 
+__DELETE_CONF__ = False
+# set DELETE CONF to True for CoNLL-2003
+
 begin_pattern = re.compile(r'^B-*')
 mid_pattern = re.compile(r'^I-*')
 out_pattern = re.compile(r'^O')

@@ -44,19 +44,19 @@ class CoNLLDataset(object):
         ```
 
     """
-    def __init__(self, filename, elmo_filename, processing_word=None, processing_tag=None,
+    def __init__(self, filename, elmo_filename, processing_word=None, processing_postags=None,
                  generate_anchor = None, max_iter=None):
         """
         Args:
             filename: path to the file
             processing_words: (optional) function that takes a word as input
-            processing_tags: (optional) function that takes a tag as input
+            processing_postags: (optional) function that takes a postag as input
             max_iter: (optional) max number of sentences to yield
 
         """
         self.filename = filename
         self.processing_word = processing_word
-        self.processing_tag = processing_tag
+        self.processing_postags = processing_postags
         self.generate_anchor = generate_anchor
         self.max_iter = max_iter
         self.length = None
@@ -86,6 +86,11 @@ class CoNLLDataset(object):
                     if self.max_iter is not None and niter > self.max_iter:
                         break
 
+                    # processing pos tags
+                    pos_tags = arr[1].split(' ')
+                    if self.processing_postags is not None:
+                        pos_tags = [self.processing_postags(tag) for tag in pos_tags]
+
                     # generate anchors
                     if self.generate_anchor is not None:
                         anchors, anchor_labels, class_ids, sample_indexes = self.generate_anchor(line)
@@ -96,25 +101,27 @@ class CoNLLDataset(object):
                         sentence_embedding = np.array(self.elmo[sentence_id])
                         if len(sentence_embedding) == 3:
                             # yield one line
-                            yield words, sentence_embedding, anchors, anchor_labels, class_ids
+                            yield words, pos_tags, sentence_embedding, anchors, anchor_labels, class_ids
                     except:
                         continue
 
     def get_data(self):
 
         total_words = []
+        total_postags = []
         total_sentence_embeddings = []
         total_anchors = []
         total_anchor_labels = []
         total_class_ids = []
 
-        for (words, sentence_embedding, anchors, anchor_labels, class_ids) in self:
+        for (words, pos_tags, sentence_embedding, anchors, anchor_labels, class_ids) in self:
             total_words += [words]
+            total_postags += [pos_tags]
             total_sentence_embeddings += [sentence_embedding]
             total_anchors += [anchors]
             total_anchor_labels += [anchor_labels]
             total_class_ids += [class_ids]
-        return [total_words,total_sentence_embeddings, total_anchors, total_anchor_labels, total_class_ids]
+        return [total_words, total_postags, total_sentence_embeddings, total_anchors, total_anchor_labels, total_class_ids]
 
     def shuffle_data(self):
         data_len = len(self.data[0])
@@ -149,11 +156,11 @@ def get_vocabs(datasets):
     vocab_words = set()
     vocab_tags = set()
     for dataset in datasets:
-        for words, _, _, _, _ in dataset:
+        for words, tags, _, _, _, _ in dataset:
             vocab_words.update(words)
-            #vocab_tags.update(tags)
+            vocab_tags.update(tags)
     print("- done. {} tokens".format(len(vocab_words)))
-    return vocab_words, _
+    return vocab_words, vocab_tags
 
 def get_char_vocab(dataset):
     """Build char vocabulary from an iterable of datasets objects
@@ -166,7 +173,7 @@ def get_char_vocab(dataset):
 
     """
     vocab_char = set()
-    for words,  _, _, _, _ in dataset:
+    for words, _, _, _, _, _ in dataset:
         for word in words:
             vocab_char.update(word)
     return vocab_char
@@ -324,6 +331,28 @@ def get_processing_word(vocab_words=None, vocab_chars=None,
 
     return f
 
+def get_processing_postags(vocab_pos_tags=None):
+    """Return lambda function that transform a pos tag (string) into id
+
+    Args:
+        vocab: dict[pos_tags] = idx
+
+    Returns:
+        f("NN") = (1)
+                 = (pos_tag id)
+
+    """
+    def f(pos_tag):
+        # get id of a pos_tag
+        if vocab_pos_tags is not None:
+            if pos_tag in vocab_pos_tags:
+                pos_tag = vocab_pos_tags[pos_tag]
+            else:
+                raise Exception("Unknow key is not allowed. Check that "\
+                        "your vocab (tags?) is correct")
+        return pos_tag
+
+    return f
 
 def _pad_sequences(sequences, pad_tok, max_length):
     """
@@ -413,11 +442,13 @@ def minibatches(dataset, minibatch_size):
     """
     x_batch, y_batch, sen_batch = [], [], []
     anchor_batch, anchor_label_batch, cls_batch = [], [], []
-    for x, sen, anchor, anchor_label, class_id in zip(*dataset.data):
+    postag_batch = []
+    for x, pos_tags, sen, anchor, anchor_label, class_id in zip(*dataset.data):
         if len(x_batch) == minibatch_size:
-            yield x_batch, sen_batch, anchor_batch, anchor_label_batch, cls_batch
+            yield x_batch, postag_batch, sen_batch, anchor_batch, anchor_label_batch, cls_batch
             x_batch, sen_batch = [], []
             anchor_batch, anchor_label_batch, cls_batch = [], [], []
+            postag_batch = []
 
         if type(x[0]) == tuple:
             x = zip(*x)
@@ -426,9 +457,10 @@ def minibatches(dataset, minibatch_size):
         anchor_batch += [anchor]
         anchor_label_batch += [anchor_label]
         cls_batch += [class_id]
+        postag_batch += [pos_tags]
 
     if len(x_batch) != 0:
-        yield x_batch, sen_batch, anchor_batch, anchor_label_batch, cls_batch
+        yield x_batch, postag_batch, sen_batch, anchor_batch, anchor_label_batch, cls_batch
 
 
 def get_chunk_type(tok, idx_to_tag):

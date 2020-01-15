@@ -5,7 +5,7 @@ import tensorflow as tf
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
 
-from .rpn import detect_conflict, conflict_order
+from .rpn import detect_conflict
 from .data_utils import minibatches, pad_sequences, get_chunks, pad_elmo_embedding
 from .general_utils import Progbar
 from .base_model import BaseModel
@@ -28,6 +28,10 @@ class NERModel(BaseModel):
         # shape = (batch size, max length of sentence in batch)
         self.word_ids = tf.placeholder(tf.int32, shape=[None, None],
                         name="word_ids")
+
+        # shape = (batch size, max length of sentence in batch)
+        self.postag_ids = tf.placeholder(tf.int32, shape=[None, None],
+                        name="postag_ids")
 
         # shape = (batch size, 3, max_len, 1024)
         self.elmo_embedding = tf.placeholder(tf.float32, shape=[None, 3, None, 1024],
@@ -64,7 +68,7 @@ class NERModel(BaseModel):
                         name="lr")
 
 
-    def get_feed_dict(self, words, sentences=None, anchors=None, anchor_labels=None,
+    def get_feed_dict(self, words, postags=None, sentences=None, anchors=None, anchor_labels=None,
             lr=None, dropout=None):
         """Given some data, pad it and build a feed dictionary
 
@@ -98,6 +102,10 @@ class NERModel(BaseModel):
         if self.config.use_chars:
             feed[self.char_ids] = char_ids
             feed[self.word_lengths] = word_lengths
+
+        if postags is not None:
+            postags, _ = pad_sequences(postags, 0)
+            feed[self.postag_ids] = postags
 
         # get elmo embedding
         # list of numpy array: batch_size of (3: layer_num, sentence_len, 1024)
@@ -145,6 +153,19 @@ class NERModel(BaseModel):
 
             self.word_embeddings = tf.nn.embedding_lookup(_word_embeddings,
                     self.word_ids, name="word_embeddings")
+
+        with tf.variable_scope("postags"): # postags
+            # random initialize pos tag embeddings
+            _postags_embeddings = tf.get_variable(
+                    name="_postags_embeddings",
+                    dtype=tf.float32,
+                    shape=[self.config.ntags, self.config.dim_postags])
+            # lookup postag embeddings
+            self.pos_embeddings = tf.nn.embedding_lookup(_postags_embeddings,
+                    self.postag_ids, name="postags_embeddings")
+            # concate word embedding with pos tag embedding
+            self.word_embeddings = tf.concat([self.word_embeddings, \
+                    self.pos_embeddings], axis=-1)
 
         with tf.variable_scope("chars"): # chars
             if self.config.use_chars:
@@ -308,7 +329,7 @@ class NERModel(BaseModel):
                 self.config.clip)
         self.initialize_session() # now self.sess is defined and vars are init
 
-    def predict_rpn(self, words, sentences):
+    def predict_rpn(self, words, postags, sentences):
         """
         Args:
             sentences: list of sentences
@@ -318,7 +339,7 @@ class NERModel(BaseModel):
             sequence_length
 
         """
-        fd, sequence_lengths = self.get_feed_dict(words, sentences, dropout=1.0)
+        fd, sequence_lengths = self.get_feed_dict(words, postags, sentences, dropout=1.0)
 
         # shape: batch_size , nsteps * anchor_types, 2
         [pred_rpn_prob] = self.sess.run(
@@ -348,10 +369,10 @@ class NERModel(BaseModel):
         train.shuffle_data()
 
         # iterate over dataset
-        for i, (words, sentences, anchors, anchor_labels, _) in enumerate(
+        for i, (words, postags, sentences, anchors, anchor_labels, _) in enumerate(
                 minibatches(train, batch_size)):
 
-            fd, _ = self.get_feed_dict(words, sentences, anchors, anchor_labels,
+            fd, _ = self.get_feed_dict(words, postags, sentences, anchors, anchor_labels,
                     self.config.lr, self.config.dropout)
 
             _, train_loss, summary, out_rpn_label, out_rpn_prob  = self.sess.run(
@@ -397,10 +418,10 @@ class NERModel(BaseModel):
         total_conflict_num = 0
         policy_1_correct = 0
 
-        for words, sentences, anchors, anchor_labels, class_ids in minibatches(
+        for words, postags, sentences, anchors, anchor_labels, class_ids in minibatches(
                 test, self.config.batch_size):
 
-            fd, sequence_lengths = self.get_feed_dict(words, sentences, dropout=1.0)
+            fd, sequence_lengths = self.get_feed_dict(words, postags, sentences, dropout=1.0)
             # lstm_1_output
             lstm_feature, batch_last_hidden, batch_context_word, batch_context_len, rpn_prob = self.sess.run(
                     [self.word_embeddings, self.sequence_last_hidden,
@@ -454,7 +475,7 @@ class NERModel(BaseModel):
                         # append roi feature to anchor types
                         anchor_len = roi[1] - roi[0] + 1
                         pad_num = self.config.anchor_types - anchor_len
-                        pad_feature = np.zeros((pad_num, 300))
+                        pad_feature = np.zeros((pad_num, self.config.hidden_size_lstm_1 * 2))
                         pad_elmo_feature = np.zeros((pad_num, 3, 1024))
                         roi_appended_feature = np.append(roi_feature, pad_feature, axis = 0)
                         elmo_appended_feature = np.append(roi_elmo_feature, pad_elmo_feature, axis = 0)
@@ -524,9 +545,9 @@ class NERModel(BaseModel):
         """
         true_pos, false_pos, true_neg, false_neg = 0, 0, 0, 0
         batch_idx = 0
-        for words, sentences, anchors, anchor_labels, _ in minibatches(
+        for words, postags, sentences, anchors, anchor_labels, _ in minibatches(
                 test, self.config.batch_size):
-            pred_labels, seq_lengths, batch_prob = self.predict_rpn(words, sentences)
+            pred_labels, seq_lengths, batch_prob = self.predict_rpn(words, postags, sentences)
 
             for line_idx in range(len(anchor_labels)):
                 line_label = anchor_labels[line_idx]
