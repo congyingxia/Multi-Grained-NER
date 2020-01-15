@@ -1,0 +1,1 @@
+Xinhua News Agency , Shanghai , August 31st , by reporter Jierong Zhou	NNP NNP NNP , NNP , NNP NN , IN NN NNP NNP	2 0 2	3 4 4	1 10 10	1 10 12
